@@ -45,12 +45,17 @@ class CategoryViewController: UITableViewController {
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         print(categoryArray[indexPath.row])
+        performSegue(withIdentifier: "goToItems", sender: self)
+    }
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        let destinationVC = segue.destination as! TodoListViewController
         
-        categoryArray[indexPath.row].name = categoryArray[indexPath.row].name
+        if let indexPath = tableView.indexPathForSelectedRow{
+            destinationVC.selectedCategory = categoryArray[indexPath.row]
+            
+        }
         
-        saveItems()
-        
-        tableView.deselectRow(at: indexPath, animated: true)
     }
     
     //MARK: - Data Manipulation Methods
