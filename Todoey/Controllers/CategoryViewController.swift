@@ -9,7 +9,7 @@
 import UIKit
 import RealmSwift
 
-class CategoryViewController: UITableViewController {
+class CategoryViewController: SwipeTableViewController {
 
     //MARK - Var Definition
     let realm = try! Realm()
@@ -23,8 +23,7 @@ class CategoryViewController: UITableViewController {
         super.viewDidLoad()
         
         print(dataFilePath!)
-        
-//        loadCategories()
+
         
     }
 
@@ -35,10 +34,10 @@ class CategoryViewController: UITableViewController {
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "CategoryCell", for: indexPath)
+        let cell = super.tableView(tableView, cellForRowAt: indexPath)
         
         cell.textLabel?.text = categoryArray?[indexPath.row].name ?? "No Category Added Yet"
-                
+        
         return cell
     }
     
@@ -81,6 +80,21 @@ class CategoryViewController: UITableViewController {
         tableView.reloadData()
     }
     
+    //MARK: - Delete Categories
+    
+    override func updateModel(at indexPath: IndexPath) {
+        
+        if let categoryForDelection = self.categoryArray?[indexPath.row]{
+            do {
+                try self.realm.write {
+                    self.realm.delete(categoryForDelection)
+                }
+            }catch {
+                print("Error deleting category, \(error)")
+            }
+        }
+    }
+    
     //MARK: - Add New Categories
     
     @IBAction func addButtonPressed(_ sender: Any) {
@@ -90,11 +104,8 @@ class CategoryViewController: UITableViewController {
         
         let action = UIAlertAction(title: "Add Item", style: .default) { (action) in
             
-//            let newCat = Category(context: self.context)
             let newCat = Category()
             newCat.name = textField.text!
-            
-//            self.categoryArray.append(newCat)
             
             self.save(category: newCat)
         }
